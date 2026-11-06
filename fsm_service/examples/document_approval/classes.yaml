@@ -1,0 +1,87 @@
+# Пример конфигурации из раздела 1 задания 3-1-1 (без изменений).
+# Параметр подкласса с тем же id полностью заменяет параметр родителя.
+# default — подставляется, если поле пропущено; явный null остаётся незаданным.
+classes:
+  - id: design_document
+    title: Конструкторский документ
+    parameters:
+      - id: designation
+        title: Обозначение
+        type: string
+      - id: sheets
+        title: Число листов
+        type: integer
+        min: 1
+        max: 50
+        default: 1
+      # Этот параметр нужен при выборе составности.
+      - id: gearboxes # ссылки на редукторы, описанные документом: тип — класс, значение — список id
+        title: Редукторы
+        type: gearbox
+        quantity_max: 4
+
+  - id: drawing
+    title: Чертеж
+    # При выборе только составности перечислите параметры родителя здесь явно.
+    parent: design_document # наследование
+    parameters:
+      - id: sheets # переопределен целиком после наследования: другой диапазон, default повторен
+        title: Число листов
+        type: integer
+        min: 1
+        max: 20
+        default: 1
+      - id: mass # новый параметр, без значения по умолчанию
+        title: Масса, кг
+        type: decimal
+        min: 0.1
+        max: 500
+      - id: review_mode
+        title: Режим проверки
+        type: string
+        default: normal
+
+  - id: diagram
+    title: Схема
+    parent: design_document # параметры наследуются без изменений
+
+  - id: gearbox
+    title: Редуктор
+    parameters:
+      - id: ratio
+        title: Передаточное число
+        type: decimal
+        min: 1
+        max: 100
+      - id: gears # у параметра-состава указан класс связанных объектов
+        title: Шестерни
+        type: gear
+        quantity_min: 2
+        quantity_max: 6
+      - id: bearings
+        title: Подшипники
+        type: bearing
+        quantity_min: 2 # верхняя граница не задана и, соответственно, не проверяется
+
+  - id: gear # простые объекты: составов внутри нет
+    title: Шестерня
+    parameters:
+      - id: teeth
+        title: Число зубьев
+        type: integer
+        min: 10
+        max: 200
+      - id: module
+        title: Модуль, мм
+        type: decimal
+        min: 0.5
+        max: 10
+        default: 2
+
+  - id: bearing
+    title: Подшипник
+    parameters:
+      - id: designation
+        title: Условное обозначение
+        type: string
+        default: "6204"

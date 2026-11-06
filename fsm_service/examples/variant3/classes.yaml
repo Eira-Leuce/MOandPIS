@@ -1,0 +1,69 @@
+# Вариант 3 — классы объектов. Реализованы оба механизма:
+#   наследование — standard_order наследует параметры supply_order и переопределяет delivery_days;
+#   составность  — заказ ссылается на позиции (параметр items класса order_item).
+# Параметр подкласса с тем же id полностью заменяет параметр родителя (тип не меняется).
+# default подставляется, если поле пропущено; явный null остаётся незаданным.
+classes:
+  - id: supply_order
+    title: Заказ на поставку
+    parameters:
+      - id: customer
+        title: Заказчик
+        type: string
+      - id: items                 # состав: ссылки на позиции заказа
+        title: Позиции заказа
+        type: order_item
+        quantity_min: 1
+        quantity_max: 20
+      - id: delivery_days
+        title: Срок поставки, дней
+        type: integer
+        min: 1
+        max: 180
+        default: 30
+      - id: prepayment_percent
+        title: Предоплата, %
+        type: integer
+        min: 0
+        max: 100
+        default: 0
+      - id: payment_days
+        title: Отсрочка оплаты, дней
+        type: integer
+        min: 0
+        max: 90
+      - id: priority
+        title: Приоритет (normal | urgent)
+        type: string
+        default: normal
+
+  - id: standard_order
+    title: Заказ на поставку стандартной продукции
+    parent: supply_order          # наследование
+    parameters:
+      - id: delivery_days         # переопределён целиком: стандартная продукция — не дольше 60 дней
+        title: Срок поставки, дней
+        type: integer
+        min: 1
+        max: 60
+        default: 14
+      - id: contract              # новый параметр
+        title: Номер договора
+        type: string
+
+  - id: order_item
+    title: Позиция заказа
+    parameters:
+      - id: product
+        title: Продукция (обозначение)
+        type: string
+      - id: quantity
+        title: Количество, шт.
+        type: integer
+        min: 1
+        max: 1000
+        default: 1
+      - id: unit_price
+        title: Цена за единицу, руб.
+        type: decimal
+        min: 0.01

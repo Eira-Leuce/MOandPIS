@@ -1,0 +1,78 @@
+# Пример конфигурации из раздела 1 задания 3-1-1 (без изменений).
+# Пропущенные скалярные поля получают default; явный null не заменяется.
+objects:
+  - id: gear-1
+    class: gear
+    values:
+      teeth: 20
+      # module = 2 по умолчанию
+  - id: gear-2
+    class: gear
+    values:
+      teeth: 63
+      module: 2.5 # задан явно вместо значения по умолчанию
+  - id: gear-3
+    class: gear
+    # teeth = null: поле пропущено, значения по умолчанию нет
+  - id: bearing-1
+    class: bearing
+    # designation = "6204" по умолчанию
+  - id: bearing-2
+    class: bearing
+  - id: bearing-3
+    class: bearing
+    values:
+      designation: "6205"
+  - id: bearing-4
+    class: bearing
+    values:
+      designation: "6205"
+
+  - id: gb-1
+    class: gearbox
+    values:
+      ratio: 3.15
+      gears: [gear-1, gear-2] # идентификаторы заранее описанных объектов
+      bearings: [bearing-1, bearing-2]
+
+  - id: gb-2 # неполный: одна шестерня при минимуме 2
+    class: gearbox
+    values:
+      ratio: 2.5
+      gears: [gear-3]
+      bearings: [bearing-3, bearing-4]
+
+  - id: drw-1
+    class: drawing
+    values:
+      designation: АБВГ.123456.001
+      sheets: 12
+      gearboxes: [gb-1]
+  - id: drw-too-large
+    class: drawing
+    values:
+      designation: АБВГ.123456.002
+      sheets: 30 # загрузка разрешена; ограничение проверяется при переходе
+      gearboxes: [gb-1]
+  - id: drw-small
+    class: drawing
+    values:
+      designation: АБВГ.123456.003
+      sheets: 2
+  - id: drw-incomplete
+    class: drawing
+    values:
+      designation: АБВГ.123456.004
+      gearboxes: [gb-2]
+  - id: drw-simplified
+    class: drawing
+    values:
+      designation: АБВГ.123456.005
+      sheets: 5
+      review_mode: simplified
+  - id: drw-mandatory
+    class: drawing
+    values:
+      designation: АБВГ.123456.006
+      sheets: 2
+      review_mode: mandatory

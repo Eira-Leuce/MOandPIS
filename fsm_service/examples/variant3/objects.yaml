@@ -1,0 +1,58 @@
+# Вариант 3 — готовые объекты. Процессы над ними запускаются командой start.
+# Пропущенные скалярные поля получают default; явный null не заменяется.
+objects:
+  # --- позиции заказов (процессы над ними не запускаются) ---------------------
+  - id: item-bolt
+    class: order_item
+    values: {product: "Болт М10×40 ГОСТ 7798-70", quantity: 500, unit_price: 12.5}
+  - id: item-nut
+    class: order_item
+    values: {product: "Гайка М10 ГОСТ 5915-70", quantity: 500, unit_price: 3.2}
+  - id: item-washer
+    class: order_item
+    values: {product: "Шайба 10 ГОСТ 11371-78", unit_price: 0.8}   # quantity = 1 по умолчанию
+  - id: item-unpriced
+    class: order_item
+    values: {product: "Винт М6×20 ГОСТ 1491-80", quantity: 200}   # цена не назначена
+  - id: item-too-many
+    class: order_item
+    values: {product: "Болт М12×60 ГОСТ 7798-70", quantity: 5000, unit_price: 15.0}  # больше 1000
+
+  # --- основной объект демонстрации --------------------------------------------
+  - id: ord-1
+    class: standard_order
+    values:
+      customer: ООО «Ромашка»
+      contract: Д-2026/117
+      items: [item-bolt, item-nut, item-washer]
+      delivery_days: 20
+      payment_days: 30                 # prepayment_percent = 0, priority = normal по умолчанию
+
+  # --- объекты для отдельных тестовых запусков ----------------------------------
+  - id: ord-default-delivery           # срок не указан: default подкласса 14 дней
+    class: standard_order
+    values: {customer: ООО «Ромашка», items: [item-bolt], prepayment_percent: 100}
+  - id: ord-long-delivery              # 90 дней: базовому классу можно (≤180), стандартному — нет (≤60)
+    class: standard_order
+    values: {customer: АО «Звезда», items: [item-bolt], delivery_days: 90, payment_days: 30}
+  - id: ord-bad-quantity               # у позиции 5000 шт. при максимуме 1000
+    class: standard_order
+    values: {customer: АО «Звезда», items: [item-bolt, item-too-many], payment_days: 30}
+  - id: ord-unpriced                   # у одной позиции нет цены
+    class: standard_order
+    values: {customer: АО «Звезда», items: [item-bolt, item-unpriced], payment_days: 30}
+  - id: ord-empty                      # без позиций: состав не задан
+    class: standard_order
+    values: {customer: АО «Звезда»}
+  - id: ord-urgent                     # срочный, полная предоплата
+    class: standard_order
+    values: {customer: ИП Петров, items: [item-nut], priority: urgent, prepayment_percent: 100}
+  - id: ord-urgent-credit              # срочный в кредит — не согласуется
+    class: standard_order
+    values: {customer: ИП Петров, items: [item-nut], priority: urgent, payment_days: 30}
+  - id: ord-no-terms                   # отсрочка явно не задана (null), предоплаты нет
+    class: standard_order
+    values: {customer: ИП Петров, items: [item-nut], payment_days: null}
+  - id: base-order                     # объект базового класса: шаблона для supply_order нет
+    class: supply_order
+    values: {customer: ООО «Ромашка», items: [item-bolt]}
