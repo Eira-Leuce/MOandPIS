@@ -9,6 +9,7 @@ from .classes import (
 )
 from .errors import ConfigurationError
 from .objects import ObjectStore, ProcessObject, load_objects, load_objects_yaml
+from .users import Directory, Role, User, load_directory, load_directory_yaml
 
 __all__ = [
     # классы и объекты предметной области
@@ -16,4 +17,6 @@ __all__ = [
     "matches_type", "ObjectStore", "ProcessObject", "load_objects", "load_objects_yaml",
     # загрузка
     "ConfigurationError",
+    # роли и пользователи
+    "Directory", "Role", "User", "load_directory", "load_directory_yaml",
 ]

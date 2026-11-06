@@ -1,0 +1,34 @@
+# Вариант 3 — роли по этапам диаграммы (рис. 3 задания) и тестовые пользователи.
+roles:
+  - id: sales_manager
+    title: Менеджер по продажам          # регистрация, состав, отложенное рассмотрение
+  - id: economist
+    title: Планово-экономический отдел   # согласование цены
+  - id: logistics
+    title: Отдел логистики               # согласование графика поставки
+  - id: finance
+    title: Финансовый отдел              # согласование графика оплаты
+  - id: commercial_director
+    title: Коммерческий директор         # решение о выполнении, отложенное выполнение
+  - id: production
+    title: Производство и склад          # выполнение
+
+users:
+  - id: smirnova
+    name: Смирнова А. В.
+    roles: [sales_manager]
+  - id: kozlov
+    name: Козлов Д. С.
+    roles: [economist]
+  - id: popova
+    name: Попова Е. И.
+    roles: [logistics]
+  - id: volkov
+    name: Волков И. П.
+    roles: [finance]
+  - id: morozov
+    name: Морозов С. Н.
+    roles: [commercial_director, finance]   # несколько ролей
+  - id: lebedev
+    name: Лебедев К. А.
+    roles: [production]

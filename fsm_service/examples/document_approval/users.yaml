@@ -1,0 +1,19 @@
+# Пример конфигурации из раздела 1 задания 3-1-1 (без изменений).
+roles:
+  - id: developer
+    title: Разработчик
+  - id: normcontroller
+    title: Нормоконтролер
+  - id: chief_designer
+    title: Главный конструктор
+
+users:
+  - id: ivanov
+    name: Иванов И. И.
+    roles: [developer]
+  - id: petrov
+    name: Петров П. П.
+    roles: [normcontroller]
+  - id: sidorov
+    name: Сидоров С. С.
+    roles: [chief_designer, normcontroller] # одновременно имеет несколько ролей, т.е. больше прав
