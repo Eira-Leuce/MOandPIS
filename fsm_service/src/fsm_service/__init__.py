@@ -25,6 +25,18 @@ from .conditions import (
 )
 from .errors import ConfigurationError
 from .objects import ObjectStore, ProcessObject, load_objects, load_objects_yaml
+from .service import (
+    ACCEPTED,
+    ERROR,
+    REJECTED,
+    ProcessInstance,
+    Message,
+    ProcessResult,
+    ProcessTemplate,
+    State,
+    Transition,
+    build_service,
+)
 from .users import Directory, Role, User, load_directory, load_directory_yaml
 
 __all__ = [
@@ -35,6 +47,9 @@ __all__ = [
     "AGGREGATORS", "Always", "And", "ClassPredicate", "ConditionError", "EvaluationContext",
     "Expression", "Not", "Or", "ParamPredicate", "compile_condition", "get_aggregator",
     "parse_predicates", "register_aggregator",
+    # автомат
+    "ACCEPTED", "ERROR", "REJECTED", "ProcessInstance", "Message", "ProcessResult",
+    "ProcessTemplate", "State", "Transition", "build_service",
     # загрузка
     "ConfigurationError",
     # роли и пользователи
