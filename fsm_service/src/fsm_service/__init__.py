@@ -23,6 +23,7 @@ from .conditions import (
     parse_predicates,
     register_aggregator,
 )
+from .engine import CommandResult, ProcessEngine
 from .errors import ConfigurationError
 from .objects import ObjectStore, ProcessObject, load_objects, load_objects_yaml
 from .service import (
@@ -50,6 +51,8 @@ __all__ = [
     # автомат
     "ACCEPTED", "ERROR", "REJECTED", "ProcessInstance", "Message", "ProcessResult",
     "ProcessTemplate", "State", "Transition", "build_service",
+    # исполнитель, команды, журнал
+    "CommandResult", "ProcessEngine",
     # загрузка
     "ConfigurationError",
     # роли и пользователи
