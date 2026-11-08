@@ -1,5 +1,6 @@
 # Вариант 3 — «Управление заказом на поставку стандартной продукции» (рис. 3 задания).
-# Состояния, роли и переходы — по диаграмме, согласованы с преподавателем.
+# Состояния и переходы — по диаграмме; роли и условия разработаны бригадой
+# и согласованы с преподавателем.
 process: supply_order_management
 title: Управление заказом на поставку стандартной продукции
 class: standard_order             # точный класс объекта; шаблоны не наследуются
@@ -17,6 +18,23 @@ actions:
   - {id: defer_execution,    title: Отложить выполнение}
   - {id: reconsider,         title: Рассмотреть повторно}
 
+predicates:
+  - {id: has_customer,      parameter: customer,           operator: filled}
+  - {id: has_items,         parameter: items,              operator: filled}     # состав не пуст
+  - {id: items_count_ok,    parameter: items,              operator: in_range}   # 1..20 позиций
+  - id: items_quantity_ok                                   # у каждой позиции количество в диапазоне её класса
+    parameter: items.quantity
+    aggregate: all
+    operator: in_range
+  - id: items_priced                                        # у каждой позиции назначена цена
+    parameter: items.unit_price
+    aggregate: all
+    operator: filled
+  - {id: delivery_in_range, parameter: delivery_days,      operator: in_range}   # у стандартного — 1..60
+  - {id: full_prepayment,   parameter: prepayment_percent, operator: "=", value: 100}
+  - {id: has_payment_terms, parameter: payment_days,       operator: filled}
+  - {id: urgent,            parameter: priority,           operator: "=", value: urgent}
+
 states:
   - {id: registration,        title: Регистрация,                   initial: true, roles: [sales_manager]}
   - {id: composition,         title: Согласование состава,          roles: [sales_manager]}
@@ -29,22 +47,48 @@ states:
   - {id: execution,           title: Выполнение,                    roles: [production]}
   - {id: done,                title: Выполнено,                     final: true}
 
-# Переходы по рис. 3 задания; условия переходов добавляются отдельно (предикаты и ДНФ).
+# Условие — список групп «И»; между группами — «ИЛИ»; not отрицает один предикат.
 transitions:
-  - {from: registration, action: complete, to: composition}
+  # Регистрация: заказчик указан И есть позиции (условие с «И»)
+  - from: registration
+    action: complete
+    to: composition
+    condition:
+      - [has_customer, has_items]
 
-  - {from: composition, action: approve,  to: price}
+  # Состав: число позиций в диапазоне И у каждой позиции количество в диапазоне (путь + all)
+  - from: composition
+    action: approve
+    to: price
+    condition:
+      - [items_count_ok, items_quantity_ok]
   - {from: composition, action: postpone, to: review_postponed}
 
-  - {from: price, action: approve,  to: delivery}
+  # Цена: у каждой позиции назначена цена (путь + all)
+  - from: price
+    action: approve
+    to: delivery
+    condition:
+      - [items_priced]
   - {from: price, action: correct,  to: composition}
   - {from: price, action: postpone, to: review_postponed}
 
-  - {from: delivery, action: approve,  to: payment}
+  # График поставки: срок в диапазоне класса (у стандартного заказа переопределён: ≤ 60 дней)
+  - from: delivery
+    action: approve
+    to: payment
+    condition:
+      - [delivery_in_range]
   - {from: delivery, action: correct,  to: composition}
   - {from: delivery, action: postpone, to: review_postponed}
 
-  - {from: payment, action: approve,  to: decision}
+  # График оплаты: 100 % предоплата ИЛИ (отсрочка задана И заказ не срочный)  — «ИЛИ», «И», not
+  - from: payment
+    action: approve
+    to: decision
+    condition:
+      - [full_prepayment]
+      - [has_payment_terms, not urgent]
   - {from: payment, action: correct,  to: composition}
   - {from: payment, action: postpone, to: review_postponed}
 
@@ -52,9 +96,18 @@ transitions:
 
   - {from: decision, action: execute,            to: execution}
   - {from: decision, action: return_to_approval, to: composition}
-  - {from: decision, action: defer_decision,     to: execution_postponed}
+  # Срочный заказ откладывать нельзя (отрицание)
+  - from: decision
+    action: defer_decision
+    to: execution_postponed
+    condition:
+      - [not urgent]
 
-  - {from: execution, action: defer_execution, to: execution_postponed}
-  - {from: execution, action: complete,        to: done}
+  - from: execution
+    action: defer_execution
+    to: execution_postponed
+    condition:
+      - [not urgent]
+  - {from: execution, action: complete, to: done}
 
   - {from: execution_postponed, action: reconsider, to: decision}
