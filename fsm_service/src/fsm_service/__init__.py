@@ -7,6 +7,18 @@ from .classes import (
     load_classes_yaml,
     matches_type,
 )
+from .commands import (
+    Action,
+    AuditLog,
+    Command,
+    CommandError,
+    JsonLinesLog,
+    MemoryLog,
+    ProcessService,
+    Start,
+    TeeLog,
+    parse_command,
+)
 from .conditions import (
     AGGREGATORS,
     Always,
@@ -53,7 +65,8 @@ __all__ = [
     "ACCEPTED", "ERROR", "REJECTED", "ProcessInstance", "Message", "ProcessResult",
     "ProcessTemplate", "State", "Transition", "build_service",
     # исполнитель, команды, журнал
-    "CommandResult", "ProcessEngine",
+    "CommandResult", "ProcessEngine", "Action", "AuditLog", "Command", "CommandError",
+    "JsonLinesLog", "MemoryLog", "ProcessService", "Start", "TeeLog", "parse_command",
     # загрузка
     "load_system", "load_system_dir", "load_template", "load_template_yaml", "ConfigurationError",
     # роли и пользователи
