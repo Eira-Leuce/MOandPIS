@@ -1,0 +1,60 @@
+# Вариант 3 — «Управление заказом на поставку стандартной продукции» (рис. 3 задания).
+# Состояния, роли и переходы — по диаграмме, согласованы с преподавателем.
+process: supply_order_management
+title: Управление заказом на поставку стандартной продукции
+class: standard_order             # точный класс объекта; шаблоны не наследуются
+create_roles: [sales_manager]     # кто может запускать процесс
+
+actions:
+  - {id: complete,           title: Завершено}
+  - {id: approve,            title: Согласовано}
+  - {id: correct,            title: Коррекция}
+  - {id: postpone,           title: Отложить}
+  - {id: resume,             title: Продолжить рассмотрение}
+  - {id: return_to_approval, title: Вернуть на согласование}
+  - {id: execute,            title: Выполнять}
+  - {id: defer_decision,     title: Отложить рассмотрение}
+  - {id: defer_execution,    title: Отложить выполнение}
+  - {id: reconsider,         title: Рассмотреть повторно}
+
+states:
+  - {id: registration,        title: Регистрация,                   initial: true, roles: [sales_manager]}
+  - {id: composition,         title: Согласование состава,          roles: [sales_manager]}
+  - {id: price,               title: Согласование цены,             roles: [economist]}
+  - {id: delivery,            title: Согласование графика поставки, roles: [logistics]}
+  - {id: payment,             title: Согласование графика оплаты,   roles: [finance]}
+  - {id: review_postponed,    title: Отложенное рассмотрение,       roles: [sales_manager]}
+  - {id: decision,            title: Решение о выполнении,          roles: [commercial_director]}
+  - {id: execution_postponed, title: Отложенное выполнение,         roles: [commercial_director]}
+  - {id: execution,           title: Выполнение,                    roles: [production]}
+  - {id: done,                title: Выполнено,                     final: true}
+
+# Переходы по рис. 3 задания; условия переходов добавляются отдельно (предикаты и ДНФ).
+transitions:
+  - {from: registration, action: complete, to: composition}
+
+  - {from: composition, action: approve,  to: price}
+  - {from: composition, action: postpone, to: review_postponed}
+
+  - {from: price, action: approve,  to: delivery}
+  - {from: price, action: correct,  to: composition}
+  - {from: price, action: postpone, to: review_postponed}
+
+  - {from: delivery, action: approve,  to: payment}
+  - {from: delivery, action: correct,  to: composition}
+  - {from: delivery, action: postpone, to: review_postponed}
+
+  - {from: payment, action: approve,  to: decision}
+  - {from: payment, action: correct,  to: composition}
+  - {from: payment, action: postpone, to: review_postponed}
+
+  - {from: review_postponed, action: resume, to: composition}
+
+  - {from: decision, action: execute,            to: execution}
+  - {from: decision, action: return_to_approval, to: composition}
+  - {from: decision, action: defer_decision,     to: execution_postponed}
+
+  - {from: execution, action: defer_execution, to: execution_postponed}
+  - {from: execution, action: complete,        to: done}
+
+  - {from: execution_postponed, action: reconsider, to: decision}
