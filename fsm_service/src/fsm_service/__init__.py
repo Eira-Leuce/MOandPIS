@@ -23,6 +23,7 @@ from .conditions import (
     parse_predicates,
     register_aggregator,
 )
+from .config import load_system, load_system_dir, load_template, load_template_yaml
 from .engine import CommandResult, ProcessEngine
 from .errors import ConfigurationError
 from .objects import ObjectStore, ProcessObject, load_objects, load_objects_yaml
@@ -54,7 +55,7 @@ __all__ = [
     # исполнитель, команды, журнал
     "CommandResult", "ProcessEngine",
     # загрузка
-    "ConfigurationError",
+    "load_system", "load_system_dir", "load_template", "load_template_yaml", "ConfigurationError",
     # роли и пользователи
     "Directory", "Role", "User", "load_directory", "load_directory_yaml",
 ]

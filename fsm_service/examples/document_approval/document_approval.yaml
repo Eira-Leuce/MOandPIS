@@ -1,0 +1,95 @@
+# Пример конфигурации из раздела 1 задания 3-1-1 (без изменений).
+process: document_approval
+title: Утверждение документа
+class: drawing # только объекты этого класса; шаблоны не наследуются
+create_roles: [developer] # кто может создавать процесс
+
+actions:
+  - id: submit
+    title: Передать на проверку
+  - id: cancel
+    title: Аннулировать
+  - id: accept
+    title: Принять
+  - id: reject
+    title: Вернуть с замечаниями
+  - id: approve
+    title: Утвердить
+
+predicates:
+  - id: has_designation
+    parameter: designation # левый операнд
+    operator: filled # "обозначение задано", унарный оператор, не требует правого операнда
+  - id: sheets_in_range
+    parameter: sheets
+    operator: in_range # число листов соответствует диапазону поля класса (min max)
+  - id: small_document
+    parameter: sheets # левый операнд
+    operator: <= # сам оператор
+    value: 2 # не более 2 листов. 2 - правый операнд
+  - id: simplified_review
+    parameter: review_mode
+    operator: '='
+    value: simplified
+  - id: mandatory_review
+    parameter: review_mode
+    operator: '='
+    value: mandatory
+  - id: gearboxes_complete
+    parameter: gearboxes.gears # путь к параметрам объектов, из которых состоит сложный объект
+    # У каждого редуктора число шестерен в диапазоне его класса.
+    # Агрегатор объединяет результаты проверок связанных объектов.
+    # all возвращает true, если проверка истинна для каждого объекта.
+    aggregate: all
+    operator: in_range
+
+states:
+  - id: preparation
+    title: Подготовка
+    initial: true
+    roles: [developer] # кто выполняет действия в этом состоянии
+  - id: normcontrol
+    title: Нормоконтроль
+    roles: [normcontroller]
+  - id: approval
+    title: Утверждение
+    roles: [chief_designer]
+  - id: approved
+    title: Утвержден
+    final: true
+  - id: cancelled
+    title: Аннулирован
+    final: true
+
+# Условие — список дизъюнктов (с оператором между ними «ИЛИ»),
+# где каждый дизъюнкт — внутренний список предикатов (с оператором между ними «И»).
+transitions:
+  - from: preparation
+    action: submit
+    to: normcontrol
+    condition:
+      - [has_designation, sheets_in_range, gearboxes_complete] # Между ними отношение только "И"
+  - from: preparation
+    action: cancel
+    to: cancelled
+  - from: normcontrol
+    action: reject
+    to: preparation
+  - from: normcontrol # упрощённое утверждение, если полная проверка не обязательна
+    action: accept
+    to: approved
+    condition:
+      - [small_document, not mandatory_review]
+      - [simplified_review, not mandatory_review]
+  - from: normcontrol # остальные — главному конструктору
+    action: accept
+    to: approval
+    condition:
+      - [mandatory_review]
+      - [not small_document, not simplified_review]
+  - from: approval
+    action: approve
+    to: approved
+  - from: approval
+    action: reject
+    to: preparation
