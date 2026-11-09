@@ -1,0 +1,21 @@
+# Демонстрация из раздела 1.5 задания: 12 команд таблицы выполнения
+start ivanov drw-1
+act ivanov drw-1 submit
+act petrov drw-1 accept
+act petrov drw-1 approve
+act sidorov drw-1 approve
+start ivanov drw-too-large
+act ivanov drw-too-large submit
+start ivanov drw-small
+act ivanov drw-small submit
+act petrov drw-small accept
+start ivanov drw-incomplete
+act ivanov drw-incomplete submit
+# Отдельная демонстрация ДНФ
+start ivanov drw-simplified
+act ivanov drw-simplified submit
+act petrov drw-simplified accept
+start ivanov drw-mandatory
+act ivanov drw-mandatory submit
+act petrov drw-mandatory accept
+act sidorov drw-mandatory approve

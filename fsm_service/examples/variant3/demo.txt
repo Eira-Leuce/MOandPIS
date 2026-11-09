@@ -1,0 +1,55 @@
+## 1. Загруженные данные
+# Объекты описаны в objects.yaml и загружены в память. Процессы ещё не запущены.
+objects
+users
+
+## 2. Запуск процесса над заказом ord-1
+# Запускать процесс может только роль sales_manager (create_roles шаблона).
+start kozlov ord-1
+start smirnova ord-1
+# Пропущенные поля получили значения по умолчанию: предоплата 0, приоритет normal.
+status ord-1
+
+## 3. Согласование: условие «И» и путь по составу
+# Регистрация → состав: есть заказчик И есть позиции.
+act smirnova ord-1 complete
+# Состав → цена: у ВСЕХ позиций количество в диапазоне (items.quantity, aggregate: all).
+act smirnova ord-1 approve
+
+## 4. Отказ по роли
+# Согласовывать цену может только economist, у popova роль logistics.
+act popova ord-1 approve
+act kozlov ord-1 approve
+
+## 5. Возврат на предыдущий этап
+# Логист возвращает заказ на коррекцию состава, затем этапы проходятся заново.
+act popova ord-1 correct
+act smirnova ord-1 approve
+act kozlov ord-1 approve
+act popova ord-1 approve
+
+## 6. Условие «ИЛИ» с отрицанием и завершение
+# Оплата: 100 % предоплата ИЛИ (отсрочка задана И НЕ срочный) — срабатывает вторая группа.
+act volkov ord-1 approve
+act morozov ord-1 execute
+act lebedev ord-1 complete
+status ord-1
+# Из конечного состояния действия не выполняются.
+act lebedev ord-1 complete
+
+## 7. Отказ по условию: диапазон, переопределённый в подклассе
+# Отдельный запуск с другими данными: срок 90 дней. Базовому классу можно (≤ 180),
+# заказу стандартной продукции — нет (≤ 60).
+start smirnova ord-long-delivery
+act smirnova ord-long-delivery complete
+act smirnova ord-long-delivery approve
+act kozlov ord-long-delivery approve
+act popova ord-long-delivery approve
+
+## 8. Некорректная команда и объект без шаблона
+act smirnova ord-1
+start smirnova base-order
+
+## 9. Журнал команд
+# Каждая команда — одна запись в log.jsonl: успехи, отказы и ошибки.
+log

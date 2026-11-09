@@ -5,6 +5,9 @@ description = "Сервис — конечный автомат с очеред�
 requires-python = ">=3.10"
 dependencies = ["PyYAML>=6"]
 
+[project.scripts]
+fsm-service = "fsm_service.cli:main"
+
 [project.optional-dependencies]
 test = ["pytest>=8"]
 
