@@ -22,7 +22,7 @@ objects:
   - id: ord-1
     class: standard_order
     values:
-      customer: ООО «Рога и копыта»
+      customer: ООО «Ромашка»
       contract: Д-2026/117
       items: [item-bolt, item-nut, item-washer]
       delivery_days: 20
@@ -31,7 +31,7 @@ objects:
   # --- объекты для отдельных тестовых запусков ----------------------------------
   - id: ord-default-delivery           # срок не указан: default подкласса 14 дней
     class: standard_order
-    values: {customer: ООО «Рога и копыта», items: [item-bolt], prepayment_percent: 100}
+    values: {customer: ООО «Ромашка», items: [item-bolt], prepayment_percent: 100}
   - id: ord-long-delivery              # 90 дней: базовому классу можно (≤180), стандартному — нет (≤60)
     class: standard_order
     values: {customer: АО «Звезда», items: [item-bolt], delivery_days: 90, payment_days: 30}
@@ -55,4 +55,4 @@ objects:
     values: {customer: ИП Петров, items: [item-nut], payment_days: null}
   - id: base-order                     # объект базового класса: шаблона для supply_order нет
     class: supply_order
-    values: {customer: ООО «Рога и копыта», items: [item-bolt]}
+    values: {customer: ООО «Ромашка», items: [item-bolt]}
