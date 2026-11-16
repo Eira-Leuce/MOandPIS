@@ -14,8 +14,8 @@ roles:
     title: Производство и склад          # выполнение
 
 users:
-  - id: smirnova
-    name: Смирнова А. В.
+  - id: andreev
+    name: Андреев Н. С.
     roles: [sales_manager]
   - id: kozlov
     name: Козлов Д. С.
